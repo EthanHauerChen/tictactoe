@@ -1,22 +1,16 @@
 import { useState } from 'react';
 
-let xo = 'X';
 export default function Board() {
     const [squares, setSquares] = useState(Array(9).fill(null));
+    const [history, setHistory] = useState();
+    const [xTurn, setXTurn] = useState(true);
 
     function handleClick(index) {
-        console.log(`start of function. xo is ${xo}`);
+        if (squares[index] || calculateWinner(squares)) return; //if not null, clicking square does nothing
         const squaresAfterClick = squares.slice();
-        squaresAfterClick[index] = xo;
+        squaresAfterClick[index] = xTurn ? 'X' : 'O';
         setSquares(squaresAfterClick);
-        if (xo == 'X') {
-            xo = 'O'
-            console.log(`xo is now ${xo}`);
-        }
-        else {
-            xo = 'X';
-            console.log(`xo is now ${xo}`);
-        }
+        setXTurn(!xTurn);
     }
     
     return (<>
@@ -45,3 +39,23 @@ function Square({ value, onSquareClick }) {
     </button>
     );
 }
+
+function calculateWinner(squares) {
+    const lines = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6]
+    ];
+    for (let i = 0; i < lines.length; i++) {
+      const [a, b, c] = lines[i];
+      if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+        return squares[a];
+      }
+    }
+    return null;
+  }
